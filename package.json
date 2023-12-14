@@ -1,0 +1,41 @@
+{
+    "name": "students",
+    "version": "1.0.0",
+    "description": "A simple CAP project.",
+    "repository": "<Add your repository here>",
+    "license": "UNLICENSED",
+    "private": true,
+    "dependencies": {
+        "@sap/cds": "^7.4.1",
+        "@sap/cds-hana": "^2",
+        "@sap/hana-client": "^2.18.27",
+        "express": "^4",
+        "stream": "^0.0.2",
+        "xlsx": "^0.18.5"
+    },
+    "devDependencies": {
+        "@cap-js/sqlite": "^1",
+        "@sap/cds-dk": "^7",
+        "@sap/eslint-plugin-ui5-jsdocs": "^2.0.5",
+        "@sap/ux-specification": "^1.120.0",
+        "@sapui5/ts-types": "^1.92.2",
+        "eslint": "^7.32.0",
+        "rimraf": "^3.0.2"
+    },
+    "scripts": {
+        "start": "cds-serve",
+        "watch-project1": "cds watch --open project1/webapp/index.html?sap-ui-xx-viewCache=false",
+        "undeploy": "cf undeploy students --delete-services --delete-service-keys --delete-service-brokers",
+        "build": "rimraf resources mta_archives && mbt build --mtar archive",
+        "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
+        "watch-project2": "cds watch --open project2/webapp/index.html?sap-ui-xx-viewCache=false"
+    },
+    "cds": {
+        "requires": {
+            "db": "hana"
+        }
+    },
+    "sapux": [
+        "app/project1"
+    ]
+}

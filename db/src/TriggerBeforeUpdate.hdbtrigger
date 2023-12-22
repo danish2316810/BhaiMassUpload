@@ -1,0 +1,65 @@
+TRIGGER "TriggerBeforeUpdate" BEFORE
+  UPDATE  OF ORDERAMOUNT, AVAILABLEBUDGET
+   ON "APP_INTERACTIONS_BUDGET" REFERENCING OLD ROW OLD_BUDGET_REF,
+    NEW ROW BUDGET_REF FOR EACH ROW follows "TriggerBeforeUpdate_0"
+      
+BEGIN
+  DECLARE v_ordamount DECIMAL(15, 2);
+  DECLARE v_paid DECIMAL(15, 2);
+  DECLARE v_store_trns DECIMAL(15, 2);
+  DECLARE v_availableBudget DECIMAL(15,2);
+  DECLARE v_totalBudget DECIMAL(15,2);
+  DECLARE count INTEGER;
+count = count + 1;
+  insert into  APP_INTERACTIONS_LOG VALUES(count, 'New row', :BUDGET_REF.orderAmount,
+:BUDGET_REF.paidOut, :BUDGET_REF.storeTransfer, :BUDGET_REF.availableBudget, :BUDGET_REF.totalBudget)
+ ;
+ count = count + 1;
+insert into APP_INTERACTIONS_LOG VALUES(count, 'Old row', :OLD_BUDGET_REF.orderAmount,
+:OLD_BUDGET_REF.paidOut, :OLD_BUDGET_REF.storeTransfer, :OLD_BUDGET_REF.availableBudget, :OLD_BUDGET_REF.totalBudget)
+;
+count = count + 1;
+  SELECT TOP 1 
+  orderAmount,
+  paidOut,
+    storeTransfer,
+    availableBudget,
+    totalBudget
+     INTO v_ordamount, 
+    v_paid,
+    v_store_trns,
+    v_availableBudget,
+    v_totalBudget
+  FROM APP_INTERACTIONS_BUDGET
+  WHERE ID = :BUDGET_REF.id;
+
+  insert into APP_INTERACTIONS_LOG VALUES(count, 'select query', v_ordamount,
+  v_paid, v_store_trns, v_availableBudget, v_totalBudget)
+  ;
+  -- BUDGET_REF.available =  :BUDGET_REF.TOTAL;
+  --Change the available amount first in case total amount has changed
+  -- IF v_availableBudget != :BUDGET_REF.totalBudget THEN 
+    
+--     IF :OLD_BUDGET_REF.totalBudget  != :BUDGET_REF.totalBudget OR :OLD_BUDGET_REF.availableBudget is null THEN 
+--     -- v_availableBudget = :BUDGET_REF.totalBudget;
+--     BUDGET_REF.availableBudget = :BUDGET_REF.totalBudget;
+--   -- ELSE v_availableBudget = :BUDGET_REF.availableBudget;
+-- END IF;
+
+
+
+-- IF v_ordamount != :BUDGET_REF.orderAmount THEN 
+  
+  -- IF :OLD_BUDGET_REF.orderAmount != :BUDGET_REF.orderAmount OR :OLD_BUDGET_REF.orderAmount is null THEN 
+    IF  :BUDGET_REF.orderAmount IS NOT NULL   THEN 
+    -- IF  :BUDGET_REF.orderAmount is DISTINCT FROM :OLD_BUDGET_REF.orderAmount THEN
+    
+  BUDGET_REF.availableBudget = :BUDGET_REF.availableBudget - :BUDGET_REF.orderAmount;
+  -- BUDGET_REF.orderAmount = :BUDGET_REF.orderAmount;
+END IF;
+
+  -- Commented code below
+
+
+  
+END
